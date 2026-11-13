@@ -57,9 +57,9 @@ void kernel_main(void)
     write_both("GDT, TSS, IDT and masked PIC initialised; CPU exceptions are handled.\n");
 
     if (pmm_init(memory_map_request.response)) {
-        write_both("Physical memory map accepted; early page allocator ready.\\n");
+        write_both("Physical memory map accepted; early page allocator ready.\n");
     } else {
-        write_both("Physical memory allocator initialisation failed.\\n");
+        write_both("Physical memory allocator initialisation failed.\n");
     }
 
     if (pit_init(100)) {
@@ -85,7 +85,7 @@ void kernel_main(void)
     }
 
     write_both("Console initialisation complete.\n");
-    write_both("System is halted safely; interrupt and memory managers are not yet enabled.\n");
+    write_both("System is halted safely; timer IRQs remain masked and no pages have been allocated.\n");
 
     x86_64_halt_forever();
 }
