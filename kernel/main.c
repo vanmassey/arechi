@@ -6,6 +6,7 @@
 #include "drivers/serial.h"
 #include "gdt.h"
 #include "interrupts.h"
+#include "drivers/pit.h"
 #include "limine.h"
 
 __attribute__((used, section(".limine_requests_start")))
