@@ -9,6 +9,7 @@
 #include "drivers/pit.h"
 #include "limine.h"
 #include "pmm.h"
+#include "hhdm.h"
 
 __attribute__((used, section(".limine_requests_start")))
 LIMINE_REQUESTS_START_MARKER
@@ -34,6 +35,12 @@ static volatile struct limine_memmap_request memory_map_request = {
     .revision = 0
 };
 
+__attribute__((used, section(".limine_requests")))
+static volatile struct limine_hhdm_request hhdm_request = {
+    .id = LIMINE_HHDM_REQUEST,
+    .revision = 0
+};
+
 __attribute__((used, section(".limine_requests_end")))
 LIMINE_REQUESTS_END_MARKER
 
@@ -55,6 +62,12 @@ void kernel_main(void)
     gdt_init();
     interrupts_init();
     write_both("GDT, TSS, IDT and masked PIC initialised; CPU exceptions are handled.\n");
+
+    if (hhdm_init(hhdm_request.response)) {
+        write_both("Higher Half Direct Map initialised.\\n");
+    } else {
+        write_both("Higher Half Direct Map initialisation failed.\\n");
+    }
 
     if (pmm_init(memory_map_request.response)) {
         write_both("Physical memory map accepted; early page allocator ready.\n");
