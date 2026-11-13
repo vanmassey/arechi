@@ -1,19 +1,30 @@
 CC      := gcc
 LD      := ld
-CFLAGS  := -std=c11 -ffreestanding -fno-stack-protector -fno-pic -fpie \
+NASM    := nasm
+
+CFLAGS  := -std=c11 -ffreestanding -fno-stack-protector -fno-pic -fno-pie \
            -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -mcmodel=kernel \
            -Wall -Wextra -Ikernel -Iexternal
-LDFLAGS := -m elf_x86_64 -nostdlib -static -pie --no-dynamic-linker \
-           -z text -z max-page-size=0x1000 -T kernel/linker.ld
+ASMFLAGS := -f elf64
+LDFLAGS := -m elf_x86_64 -nostdlib -static -z max-page-size=0x1000 \
+           -T kernel/linker.ld
 
 SRCS    := $(shell find kernel -name '*.c')
-OBJS    := $(SRCS:.c=.o)
+ASM_SRCS := $(shell find kernel -name '*.asm')
+OBJS    := $(SRCS:.c=.o) $(ASM_SRCS:.asm=.o)
+
+.PHONY: all limine run clean
 
 all: arechi.iso
 
 limine:
-	git clone https://github.com --branch=v8.x-binary --depth=1
+	@if [ ! -d limine/.git ]; then \
+		git clone https://github.com/limine-bootloader/limine.git --branch=v8.x-binary --depth=1 limine; \
+	fi
 	$(MAKE) -C limine
+
+kernel/%.o: kernel/%.asm
+	$(NASM) $(ASMFLAGS) $< -o $@
 
 kernel.elf: $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) -o $@
