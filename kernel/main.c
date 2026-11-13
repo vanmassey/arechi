@@ -10,6 +10,7 @@
 #include "limine.h"
 #include "pmm.h"
 #include "hhdm.h"
+#include "heap.h"
 
 __attribute__((used, section(".limine_requests_start")))
 LIMINE_REQUESTS_START_MARKER
@@ -64,15 +65,21 @@ void kernel_main(void)
     write_both("GDT, TSS, IDT and masked PIC initialised; CPU exceptions are handled.\n");
 
     if (hhdm_init(hhdm_request.response)) {
-        write_both("Higher Half Direct Map initialised.\\n");
+        write_both("Higher Half Direct Map initialised.\n");
     } else {
-        write_both("Higher Half Direct Map initialisation failed.\\n");
+        write_both("Higher Half Direct Map initialisation failed.\n");
     }
 
     if (pmm_init(memory_map_request.response)) {
         write_both("Physical memory map accepted; early page allocator ready.\n");
     } else {
         write_both("Physical memory allocator initialisation failed.\n");
+    }
+
+    if (heap_init()) {
+        write_both("Kernel heap initialised; byte-sized allocations are available.\n");
+    } else {
+        write_both("Kernel heap initialisation failed; dynamic allocation is unavailable.\n");
     }
 
     if (pit_init(100)) {
@@ -98,7 +105,7 @@ void kernel_main(void)
     }
 
     write_both("Console initialisation complete.\n");
-    write_both("System is halted safely; timer IRQs remain masked and no pages have been allocated.\n");
+    write_both("System is halted safely; timer IRQs remain masked and no heap allocations have been requested.\n");
 
     x86_64_halt_forever();
 }
