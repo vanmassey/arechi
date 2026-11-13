@@ -13,6 +13,9 @@ void *kmalloc(size_t size);
 /* Allocate count elements and clear the returned memory. */
 void *kcalloc(size_t count, size_t size);
 
+/* Exercise allocation, zeroing, alignment, freeing and page reclamation. */
+bool heap_self_test(void);
+
 /* Release a pointer returned by kmalloc() or kcalloc(). */
 void kfree(void *pointer);
 
