@@ -8,6 +8,7 @@
 #include "interrupts.h"
 #include "drivers/pit.h"
 #include "limine.h"
+#include "pmm.h"
 
 __attribute__((used, section(".limine_requests_start")))
 LIMINE_REQUESTS_START_MARKER
@@ -24,6 +25,12 @@ static volatile struct limine_framebuffer_request framebuffer_request = {
 __attribute__((used, section(".limine_requests")))
 static volatile struct limine_terminal_request terminal_request = {
     .id = LIMINE_TERMINAL_REQUEST,
+    .revision = 0
+};
+
+__attribute__((used, section(".limine_requests")))
+static volatile struct limine_memmap_request memory_map_request = {
+    .id = LIMINE_MEMMAP_REQUEST,
     .revision = 0
 };
 
@@ -48,6 +55,12 @@ void kernel_main(void)
     gdt_init();
     interrupts_init();
     write_both("GDT, TSS, IDT and masked PIC initialised; CPU exceptions are handled.\n");
+
+    if (pmm_init(memory_map_request.response)) {
+        write_both("Physical memory map accepted; early page allocator ready.\\n");
+    } else {
+        write_both("Physical memory allocator initialisation failed.\\n");
+    }
 
     if (pit_init(100)) {
         write_both("PIT configured at 100 Hz; IRQ0 remains masked.\n");
