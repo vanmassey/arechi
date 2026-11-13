@@ -13,13 +13,13 @@ __attribute__((used, section(".limine_requests")))
 LIMINE_BASE_REVISION(0)
 
 __attribute__((used, section(".limine_requests")))
-static struct limine_framebuffer_request framebuffer_request = {
+static volatile struct limine_framebuffer_request framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
     .revision = 0
 };
 
 __attribute__((used, section(".limine_requests")))
-static struct limine_terminal_request terminal_request = {
+static volatile struct limine_terminal_request terminal_request = {
     .id = LIMINE_TERMINAL_REQUEST,
     .revision = 0
 };
