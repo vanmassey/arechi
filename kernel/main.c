@@ -77,9 +77,15 @@ void kernel_main(void)
     }
 
     if (heap_init()) {
-        write_both("Kernel heap initialised; byte-sized allocations are available.\n");
+        write_both("Kernel heap initialised; byte-sized allocations are available.\\n");
+
+        if (heap_self_test()) {
+            write_both("Kernel heap self-test passed: alignment, zeroing, data integrity and page reclamation.\\n");
+        } else {
+            write_both("Kernel heap self-test failed.\\n");
+        }
     } else {
-        write_both("Kernel heap initialisation failed; dynamic allocation is unavailable.\n");
+        write_both("Kernel heap initialisation failed; dynamic allocation is unavailable.\\n");
     }
 
     if (pit_init(100)) {
@@ -105,7 +111,7 @@ void kernel_main(void)
     }
 
     write_both("Console initialisation complete.\n");
-    write_both("System is halted safely; timer IRQs remain masked and no heap allocations have been requested.\n");
+    write_both("System is halted safely; timer IRQs remain masked.\n");
 
     x86_64_halt_forever();
 }
