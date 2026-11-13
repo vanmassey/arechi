@@ -34,6 +34,7 @@ jobs:
           file kernel.elf
           readelf -h kernel.elf
           readelf -l kernel.elf
+          python3 tools/check_kernel.py kernel.elf
 
       - name: Upload bootable ISO
         uses: actions/upload-artifact@v4
