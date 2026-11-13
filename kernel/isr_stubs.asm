@@ -1,6 +1,7 @@
 BITS 64
 
 extern interrupt_exception_handler
+extern irq_dispatch
 
 SECTION .text
 
@@ -51,6 +52,74 @@ ISR_NO_ERROR 28
 ISR_ERROR    29
 ISR_ERROR    30
 ISR_NO_ERROR 31
+
+%macro IRQ_STUB 1
+global irq_stub_%1
+irq_stub_%1:
+    push qword 0
+    push qword (32 + %1)
+    jmp irq_common
+%endmacro
+
+IRQ_STUB 0
+IRQ_STUB 1
+IRQ_STUB 2
+IRQ_STUB 3
+IRQ_STUB 4
+IRQ_STUB 5
+IRQ_STUB 6
+IRQ_STUB 7
+IRQ_STUB 8
+IRQ_STUB 9
+IRQ_STUB 10
+IRQ_STUB 11
+IRQ_STUB 12
+IRQ_STUB 13
+IRQ_STUB 14
+IRQ_STUB 15
+
+irq_common:
+    cld
+    push rax
+    push rbx
+    push rcx
+    push rdx
+    push rbp
+    push rdi
+    push rsi
+    push r8
+    push r9
+    push r10
+    push r11
+    push r12
+    push r13
+    push r14
+    push r15
+
+    mov rdi, [rsp + 120]
+    mov r12, rsp
+    and rsp, -16
+    call irq_dispatch
+    mov rsp, r12
+
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rsi
+    pop rdi
+    pop rbp
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+
+    add rsp, 16
+    iretq
 
 isr_common:
     cld
@@ -103,5 +172,14 @@ isr_stub_table:
 %assign i 0
 %rep 32
     dq isr_stub_%+i
+%assign i i+1
+%endrep
+
+align 8
+global irq_stub_table
+irq_stub_table:
+%assign i 0
+%rep 16
+    dq irq_stub_%+i
 %assign i i+1
 %endrep
