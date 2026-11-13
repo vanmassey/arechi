@@ -44,6 +44,7 @@ void kernel_main(void)
         fb_init(framebuffer_request.response, terminal_request.response);
 
     interrupts_init();
+    write_both("IDT loaded: CPU exceptions are now handled.\n");
 
     if (serial_ready) {
         serial_write("\nArechi OS - Milestone 1\n");
