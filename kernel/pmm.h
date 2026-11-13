@@ -15,6 +15,9 @@ uint64_t pmm_alloc_pages(size_t page_count);
 /* Free an exact allocation returned by pmm_alloc_pages(). */
 bool pmm_free_pages(uint64_t physical_address, size_t page_count);
 
+/* Free an exact allocation returned as an HHDM virtual address. */
+bool pmm_free_pages_virtual(void *virtual_address, size_t page_count);
+
 /* Allocate pages and return their HHDM virtual address, or NULL. */
 void *pmm_alloc_pages_virtual(size_t page_count);
 
