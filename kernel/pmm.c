@@ -136,3 +136,25 @@ void *pmm_alloc_pages_virtual(size_t page_count)
 
     return hhdm_phys_to_virt(physical_address);
 }
+
+void *pmm_alloc_pages_zeroed(size_t page_count)
+{
+    if (page_count == 0 ||
+        page_count > UINT64_MAX / PMM_PAGE_SIZE) {
+        return 0;
+    }
+
+    void *memory = pmm_alloc_pages_virtual(page_count);
+    if (memory == 0) {
+        return 0;
+    }
+
+    uint8_t *bytes = (uint8_t *)memory;
+    const uint64_t byte_count = (uint64_t)page_count * PMM_PAGE_SIZE;
+
+    for (uint64_t i = 0; i < byte_count; ++i) {
+        bytes[i] = 0;
+    }
+
+    return memory;
+}
