@@ -1,0 +1,19 @@
+# Compiled object files & kernel binaries
+*.o
+*.d
+*.elf
+*.bin
+
+# Bootable ISO & staging directory
+*.iso
+iso_root/
+
+# Cloned Limine bootloader binaries
+limine/
+
+# Editor & OS metadata
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
