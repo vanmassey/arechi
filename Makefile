@@ -4,7 +4,7 @@ CFLAGS  := -std=c11 -ffreestanding -fno-stack-protector -fno-pic -fpie \
            -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -mcmodel=kernel \
            -Wall -Wextra -Ikernel -Iexternal
 LDFLAGS := -m elf_x86_64 -nostdlib -static -pie --no-dynamic-linker \
-           -z text -z max-page-size=0x1000 -T kernel/arch/x86_64/linker.ld
+           -z text -z max-page-size=0x1000 -T kernel/linker.ld
 
 SRCS    := $(shell find kernel -name '*.c')
 OBJS    := $(SRCS:.c=.o)
