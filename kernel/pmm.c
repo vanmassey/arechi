@@ -124,6 +124,10 @@ uint64_t pmm_free_bytes(void)
 
 void *pmm_alloc_pages_virtual(size_t page_count)
 {
+    if (!hhdm_is_ready()) {
+        return 0;
+    }
+
     const uint64_t physical_address = pmm_alloc_pages(page_count);
 
     if (physical_address == 0) {
