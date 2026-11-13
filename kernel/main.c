@@ -4,6 +4,7 @@
 #include "arch.h"
 #include "drivers/fb.h"
 #include "drivers/serial.h"
+#include "gdt.h"
 #include "interrupts.h"
 #include "limine.h"
 
@@ -43,6 +44,7 @@ void kernel_main(void)
     bool framebuffer_ready =
         fb_init(framebuffer_request.response, terminal_request.response);
 
+    gdt_init();
     interrupts_init();
     write_both("IDT loaded: CPU exceptions are now handled.\n");
 
