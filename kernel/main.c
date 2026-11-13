@@ -4,6 +4,7 @@
 #include "arch.h"
 #include "drivers/fb.h"
 #include "drivers/serial.h"
+#include "interrupts.h"
 #include "limine.h"
 
 __attribute__((used, section(".limine_requests_start")))
@@ -41,6 +42,8 @@ void kernel_main(void)
     bool serial_ready = serial_init();
     bool framebuffer_ready =
         fb_init(framebuffer_request.response, terminal_request.response);
+
+    interrupts_init();
 
     if (serial_ready) {
         serial_write("\nArechi OS - Milestone 1\n");
