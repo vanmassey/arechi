@@ -1,5 +1,7 @@
 BITS 64
 
+extern interrupt_exception_handler
+
 SECTION .text
 
 %macro ISR_NO_ERROR 1
