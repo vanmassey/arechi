@@ -264,6 +264,20 @@ bool pmm_free_pages(uint64_t physical_address, size_t page_count)
     return false;
 }
 
+bool pmm_free_pages_virtual(void *virtual_address, size_t page_count)
+{
+    if (!hhdm_is_ready() || virtual_address == 0) {
+        return false;
+    }
+
+    const uint64_t physical_address = hhdm_virt_to_phys(virtual_address);
+    if (physical_address == UINT64_MAX) {
+        return false;
+    }
+
+    return pmm_free_pages(physical_address, page_count);
+}
+
 uint64_t pmm_total_bytes(void)
 {
     return total_bytes;
