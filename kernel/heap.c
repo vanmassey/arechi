@@ -256,3 +256,50 @@ void kfree(void *pointer)
         remove_block(block);
     }
 }
+
+bool heap_self_test(void)
+{
+    if (!initialized) {
+        return false;
+    }
+
+    const uint64_t free_before = pmm_free_bytes();
+    uint8_t *small = (uint8_t *)kmalloc(37);
+    uint8_t *large = (uint8_t *)kmalloc(4097);
+    uint64_t *zeroed = (uint64_t *)kcalloc(32, sizeof(uint64_t));
+
+    bool passed = small != NULL && large != NULL && zeroed != NULL;
+
+    if (passed) {
+        passed = ((uintptr_t)small % HEAP_ALIGNMENT) == 0 &&
+                 ((uintptr_t)large % HEAP_ALIGNMENT) == 0 &&
+                 ((uintptr_t)zeroed % HEAP_ALIGNMENT) == 0;
+    }
+
+    if (passed) {
+        for (size_t i = 0; i < 37; ++i) {
+            small[i] = 0xA5U;
+        }
+
+        large[0] = 0x5AU;
+        large[4096] = 0xC3U;
+
+        for (size_t i = 0; i < 32; ++i) {
+            if (zeroed[i] != 0) {
+                passed = false;
+                break;
+            }
+        }
+
+        if (small[0] != 0xA5U || small[36] != 0xA5U ||
+            large[0] != 0x5AU || large[4096] != 0xC3U) {
+            passed = false;
+        }
+    }
+
+    kfree(large);
+    kfree(small);
+    kfree(zeroed);
+
+    return passed && pmm_free_bytes() == free_before;
+}
