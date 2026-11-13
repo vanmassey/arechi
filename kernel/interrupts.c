@@ -58,7 +58,7 @@ static void idt_set_gate(uint8_t vector, uintptr_t handler, uint16_t selector)
 
     entry->offset_low = (uint16_t)(handler & 0xFFFF);
     entry->selector = selector;
-    entry->ist = 0;
+    entry->ist = vector == 8 ? 1 : 0;
     entry->attributes = IDT_INTERRUPT_GATE;
     entry->offset_middle = (uint16_t)((handler >> 16) & 0xFFFF);
     entry->offset_high = (uint32_t)(handler >> 32);
