@@ -25,9 +25,14 @@ bool fb_init(struct limine_framebuffer_response *framebuffer_response,
         return false;
     }
 
-    terminal_service = terminal_response;
     active_terminal = terminal_response->terminals[0];
-    return active_terminal->framebuffer == framebuffer;
+    if (active_terminal->framebuffer == 0) {
+        active_terminal = 0;
+        return false;
+    }
+
+    terminal_service = terminal_response;
+    return true;
 }
 
 void fb_write(const char *text)
