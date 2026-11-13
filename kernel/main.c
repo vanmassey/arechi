@@ -46,7 +46,7 @@ void kernel_main(void)
 
     gdt_init();
     interrupts_init();
-    write_both("GDT, TSS and IDT initialised; CPU exceptions are now handled.\n");
+    write_both("GDT, TSS, IDT and masked PIC initialised; CPU exceptions are handled.\n");
 
     if (serial_ready) {
         serial_write("\nArechi OS - Milestone 1\n");
