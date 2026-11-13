@@ -49,6 +49,12 @@ void kernel_main(void)
     interrupts_init();
     write_both("GDT, TSS, IDT and masked PIC initialised; CPU exceptions are handled.\n");
 
+    if (pit_init(100)) {
+        write_both("PIT configured at 100 Hz; IRQ0 remains masked.\n");
+    } else {
+        write_both("PIT initialisation failed; timer remains unavailable.\n");
+    }
+
     if (serial_ready) {
         serial_write("\nArechi OS - Milestone 1\n");
         serial_write("------------------------\n");
