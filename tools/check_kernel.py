@@ -39,7 +39,7 @@ def main() -> None:
     entry, phoff = header[4], header[5]
     ehsize, phentsize, phnum = header[8], header[9], header[10]
 
-    if ident[:4] != b"\\x7fELF":
+    if ident[:4] != b"\x7fELF":
         fail("invalid ELF magic")
     if ident[4] != 2 or ident[5] != 1:
         fail("expected a little-endian ELF64 image")
