@@ -73,6 +73,10 @@ void pic_set_mask(uint8_t irq)
     } else {
         slave_mask |= (uint8_t)(1U << (irq - 8));
         outb(PIC2_DATA, slave_mask);
+        if (slave_mask == 0xFF) {
+            master_mask |= (uint8_t)(1U << 2);
+            outb(PIC1_DATA, master_mask);
+        }
     }
 }
 
@@ -88,6 +92,8 @@ void pic_clear_mask(uint8_t irq)
     } else {
         slave_mask &= (uint8_t)~(1U << (irq - 8));
         outb(PIC2_DATA, slave_mask);
+        master_mask &= (uint8_t)~(1U << 2);
+        outb(PIC1_DATA, master_mask);
     }
 }
 
