@@ -251,7 +251,7 @@ bool pmm_free_pages(uint64_t physical_address, size_t page_count)
             continue;
         }
 
-        if (free_bytes > total_bytes - bytes) {
+        if (bytes > total_bytes || free_bytes > total_bytes - bytes) {
             return false;
         }
 
