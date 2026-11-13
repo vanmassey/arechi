@@ -1,6 +1,7 @@
 #include "pmm.h"
 
 #include "limine.h"
+#include "hhdm.h"
 
 #define PMM_PAGE_SIZE 4096ULL
 #define PMM_MAX_REGIONS 256U
@@ -119,4 +120,15 @@ uint64_t pmm_total_bytes(void)
 uint64_t pmm_free_bytes(void)
 {
     return free_bytes;
+}
+
+void *pmm_alloc_pages_virtual(size_t page_count)
+{
+    const uint64_t physical_address = pmm_alloc_pages(page_count);
+
+    if (physical_address == 0) {
+        return 0;
+    }
+
+    return hhdm_phys_to_virt(physical_address);
 }
