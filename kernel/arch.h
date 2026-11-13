@@ -8,6 +8,11 @@ static inline void x86_64_disable_interrupts(void)
     __asm__ volatile ("cli" ::: "memory");
 }
 
+static inline void x86_64_enable_interrupts(void)
+{
+    __asm__ volatile ("sti" ::: "memory");
+}
+
 static inline void x86_64_halt(void)
 {
     __asm__ volatile ("hlt");
