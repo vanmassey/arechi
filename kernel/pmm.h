@@ -15,6 +15,9 @@ uint64_t pmm_alloc_pages(size_t page_count);
 /* Allocate pages and return their HHDM virtual address, or NULL. */
 void *pmm_alloc_pages_virtual(size_t page_count);
 
+/* Allocate contiguous pages, clear them, and return their HHDM address. */
+void *pmm_alloc_pages_zeroed(size_t page_count);
+
 uint64_t pmm_total_bytes(void);
 uint64_t pmm_free_bytes(void);
 
