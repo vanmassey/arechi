@@ -4,8 +4,7 @@
 #include <stdbool.h>
 #include "limine.h"
 
-bool fb_init(struct limine_framebuffer_response *framebuffer_response,
-             struct limine_terminal_response *terminal_response);
+bool fb_init(struct limine_framebuffer_response *framebuffer_response);
 void fb_write(const char *text);
 
 #endif
