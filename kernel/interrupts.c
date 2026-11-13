@@ -1,4 +1,5 @@
 #include "interrupts.h"
+#include "irq.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -8,6 +9,8 @@
 
 #define IDT_ENTRIES 256
 #define EXCEPTION_COUNT 32
+#define IRQ_COUNT 16
+#define IRQ_VECTOR_BASE 32
 #define IDT_INTERRUPT_GATE 0x8E
 
 struct idt_entry {
@@ -51,6 +54,7 @@ struct interrupt_frame {
 static struct idt_entry idt[IDT_ENTRIES];
 
 extern void (*isr_stub_table[EXCEPTION_COUNT])(void);
+extern void (*irq_stub_table[IRQ_COUNT])(void);
 
 static void idt_set_gate(uint8_t vector, uintptr_t handler, uint16_t selector)
 {
@@ -79,12 +83,19 @@ void interrupts_init(void)
         idt_set_gate(vector, (uintptr_t)isr_stub_table[vector], code_selector);
     }
 
+    for (uint8_t irq = 0; irq < IRQ_COUNT; ++irq) {
+        idt_set_gate((uint8_t)(IRQ_VECTOR_BASE + irq),
+                     (uintptr_t)irq_stub_table[irq], code_selector);
+    }
+
     struct idt_register idtr = {
         .limit = (uint16_t)(sizeof(idt) - 1),
         .base = (uint64_t)(uintptr_t)idt
     };
 
     __asm__ volatile ("lidt %0" : : "m"(idtr) : "memory");
+
+    irq_init();
 }
 
 static void write_hex(uint64_t value)
