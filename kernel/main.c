@@ -25,12 +25,6 @@ static volatile struct limine_framebuffer_request framebuffer_request = {
 };
 
 __attribute__((used, section(".limine_requests")))
-static volatile struct limine_terminal_request terminal_request = {
-    .id = LIMINE_TERMINAL_REQUEST,
-    .revision = 0
-};
-
-__attribute__((used, section(".limine_requests")))
 static volatile struct limine_memmap_request memory_map_request = {
     .id = LIMINE_MEMMAP_REQUEST,
     .revision = 0
@@ -57,8 +51,15 @@ void kernel_main(void)
     x86_64_disable_interrupts();
 
     bool serial_ready = serial_init();
-    bool framebuffer_ready =
-        fb_init(framebuffer_request.response, terminal_request.response);
+    bool framebuffer_ready = fb_init(framebuffer_request.response);
+
+    if (framebuffer_ready) {
+        fb_write("ARECHI OS - MILESTONE 1\n");
+        fb_write("------------------------\n");
+        fb_write("Direct framebuffer console online.\n\n");
+    } else if (serial_ready) {
+        serial_write("Framebuffer console initialisation failed.\n");
+    }
 
     gdt_init();
     interrupts_init();
@@ -77,15 +78,15 @@ void kernel_main(void)
     }
 
     if (heap_init()) {
-        write_both("Kernel heap initialised; byte-sized allocations are available.\\n");
+        write_both("Kernel heap initialised; byte-sized allocations are available.\n");
 
         if (heap_self_test()) {
-            write_both("Kernel heap self-test passed: alignment, zeroing, data integrity and page reclamation.\\n");
+            write_both("Kernel heap self-test passed: alignment, zeroing, data integrity and page reclamation.\n");
         } else {
-            write_both("Kernel heap self-test failed.\\n");
+            write_both("Kernel heap self-test failed.\n");
         }
     } else {
-        write_both("Kernel heap initialisation failed; dynamic allocation is unavailable.\\n");
+        write_both("Kernel heap initialisation failed; dynamic allocation is unavailable.\n");
     }
 
     if (pit_init(100)) {
@@ -94,23 +95,11 @@ void kernel_main(void)
         write_both("PIT initialisation failed; timer remains unavailable.\n");
     }
 
-    if (serial_ready) {
-        serial_write("\nArechi OS - Milestone 1\n");
-        serial_write("------------------------\n");
-        serial_write("Kernel entered through Limine.\n");
-    }
-
-    if (framebuffer_ready) {
-        fb_write("Arechi OS - Milestone 1\n");
-        fb_write("------------------------\n");
-        fb_write("Kernel entered through Limine.\n");
-    }
-
     if (!serial_ready && !framebuffer_ready) {
         x86_64_halt_forever();
     }
 
-    write_both("Console initialisation complete.\n");
+    write_both("\nConsole initialisation complete.\n");
     write_both("System is halted safely; timer IRQs remain masked.\n");
 
     x86_64_halt_forever();
